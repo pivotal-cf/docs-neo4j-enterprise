@@ -7,35 +7,21 @@ owner: Partners
 
 This topic describes how to install and configure Neo4j on PKS.
 
-##<a id='install'></a> Install and Configure YOUR-PRODUCT-NAME
+##<a id='install'></a> Install and Configure Neo4j on PKS
 
-To install the YOUR-PRODUCT-NAME file on the Ops Manager Installation Dashboard, do the following:
+To install the Neo4j on PKS, do the following:
 
-1. Download the product file from Pivotal Network.
+1. Download the helm charts and docker container image archives from [Pivotal Network](https://network.pivotal.io/).
 
-1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file.
+1. Extract the downloaded Helm Chart package on your local machine.
 
-1. Under **Import a Product**, click **+** next to the version number of YOUR-PRODUCT-NAME.
-This adds the tile to your staging area.
+1. Load the docker image using:
 
-1. Click the newly added **YOUR-PRODUCT-NAME** tile.
+```
+docker load < causal-cluster_image.*.tgz
+```
 
-1. **This portion of the procedure should tell the users how to configure the newly added tile by
-walking them through the sections. Which fields should they fill out? What are the different
-checkboxes? Include relevant screenshots here.**
-
-1. Click **Save**.
-
-1. Return to the Ops Manager Installation Dashboard and click **Apply changes** to install YOUR-PRODUCT-NAME tile.
-
-**If needed, include additional configuration information below. For example, maybe there are
-configuration options not required for installation but which could be useful for certain users. Typical topics include:**
-1. **Self-service**--Do you have recommendations on how to configure/design plans in the tile so that users can choose the best options for themselves?
-1. **High availability**--How do you configure/deploy X Service tile to be highly available?
-
-
-
-### Key Configuration Options
+### <a id='config'></a> Key Configuration Options
 
 The following lists relevant configuration options for the deploy.  Only the name is strictly required, but users are strongly encouraged to consult [Neo4j’s System Requirements](https://neo4j.com/docs/operations-manual/current/installation/requirements/?ref=pivotal-pks) and to tailor CPU, memory, and disk to the anticipated workload that will be used, in order to ensure best performance.
 
@@ -49,15 +35,42 @@ will result in a single neo4j instance ([dbms.mode=SINGLE](https://neo4j.com/doc
 * **memoryLimit**: Memory limit per pod
 * **volumeSize**:  Disk allocation to core nodes, for example “2Gi”
 
-### Hardware Allocation
+### <a id='deploy'></a> Deploy
 
-In order to ensure that Neo4j is deployable on basic/default PKS clusters, the default values for hardware requests have been made fairly low. 
+Carefully read the key configurations above, make your selections, and then
+install the helm chart with the following command, making substitutions for
+your choices.
+
+```
+NAMESPACE=default
+APP_NAME=my-neo4j-deploy
+IMAGE=causal-cluster:3.5.7
+helm install chart/neo4j --namespace $NAMESPACE --name $APP_NAME \
+    --set namespace=$NAMESPACE \
+    --set image=$IMAGE \
+    --set name=$APP_NAME \
+    --set neo4jPassword=mySecretPassword \
+    --set authEnabled=true \
+    --set coreServers=3 \
+    --set readReplicaServers=1 \
+    --set cpuRequest=200m \
+    --set memoryRequest=1Gi \
+    --set volumeSize=2Gi \
+    --set volumeStorageClass=standard \
+    --set acceptLicenseAgreement=yes
+```
+
+### <a id='cluster'></a> Cluster Formation
+
+Immediately after deploying Neo4j on PKS, as the pods are created the cluster begins to form.  This may take up to 5 minutes, depending on a number of factors including how long it takes pods to get scheduled, and how many resources are associated with the pods.  While the cluster is forming, the Neo4j REST API and Bolt endpoints may not be available.   After a few minutes, bolt endpoints become available inside of the kubernetes cluster.  Please note that by default, Neo4j services are not
+exposed externally.  See the limitations section for more information.
+
+### <a id='hardware'></a> Sizing
+
+In order to ensure that Neo4j is deployable on basic/default PKS clusters, the default values for hardware requests have been made fairly low.
+These default values are suitable for try-out but not for serious production/testing
+workloads.
 
 Sizing databases is ultimately something that should be done with the workload in mind.
 Consult Neo4j's [Performance Tuning Documentation](https://neo4j.com/developer/guide-performance-tuning/?ref=pivotal-pks) for more information.  In general,
 heap size and page cache sizing are the most important places to start when tuning performance.
-
-### Cluster Formation
-
-Immediately after deploying Neo4j on PKS, as the pods are created the cluster begins to form.  This may take up to 5 minutes, depending on a number of factors including how long it takes pods to get scheduled, and how many resources are associated with the pods.  While the cluster is forming, the Neo4j REST API and Bolt endpoints may not be available.   After a few minutes, bolt endpoints become available inside of the kubernetes cluster.  Please note that by default, Neo4j services are not
-exposed externally.  See below for information on proxying and other limitations.
