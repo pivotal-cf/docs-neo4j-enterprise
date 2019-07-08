@@ -13,13 +13,16 @@ To install the Neo4j on PKS, do the following:
 
 1. Download the helm charts and docker container image archives from [Pivotal Network](https://network.pivotal.io/).
 
-1. Extract the downloaded Helm Chart package on your local machine.
+1. Extract the downloaded Helm Chart package on your local machine.  This should create a directory
+called "neo4j"
 
 1. Load the docker image using:
 
 ```
 docker load < causal-cluster_image.*.tgz
 ```
+
+Note the resulting image and tag name, you will need it below.
 
 ### <a id='config'></a> Key Configuration Options
 
@@ -45,7 +48,8 @@ your choices.
 NAMESPACE=default
 APP_NAME=my-neo4j-deploy
 IMAGE=causal-cluster:3.5.7
-helm install chart/neo4j --namespace $NAMESPACE --name $APP_NAME \
+
+helm install neo4j --namespace $NAMESPACE --name $APP_NAME \
     --set namespace=$NAMESPACE \
     --set image=$IMAGE \
     --set name=$APP_NAME \
@@ -74,3 +78,12 @@ workloads.
 Sizing databases is ultimately something that should be done with the workload in mind.
 Consult Neo4j's [Performance Tuning Documentation](https://neo4j.com/developer/guide-performance-tuning/?ref=pivotal-pks) for more information.  In general,
 heap size and page cache sizing are the most important places to start when tuning performance.
+
+### <a id='uninstall'></a> Uninstalling
+
+Given a deployed `$APP_NAME` as stated in the install directions above, uninstalling is straightforward:
+
+```
+$ helm delete $APP_NAME
+release "my-neo4j-deploy" deleted
+```
