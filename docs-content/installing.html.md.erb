@@ -5,30 +5,85 @@ owner: Partners
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to install and configure YOUR-PRODUCT-NAME.
+This topic describes how to install and configure Neo4j on PKS.
 
-##<a id='install'></a> Install and Configure YOUR-PRODUCT-NAME
+##<a id='install'></a> Install and Configure Neo4j on PKS
 
-To install the YOUR-PRODUCT-NAME file on the Ops Manager Installation Dashboard, do the following:
+To install the Neo4j on PKS, do the following:
 
-1. Download the product file from Pivotal Network.
+1. Download the helm charts and docker container image archives from [Pivotal Network](https://network.pivotal.io/).
 
-1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file.
+1. Extract the downloaded Helm Chart package on your local machine.  This should create a directory
+called "neo4j"
 
-1. Under **Import a Product**, click **+** next to the version number of YOUR-PRODUCT-NAME.
-This adds the tile to your staging area.
+1. Load the docker image using:
 
-1. Click the newly added **YOUR-PRODUCT-NAME** tile.
+```
+docker load < causal-cluster_image.*.tgz
+```
 
-1. **This portion of the procedure should tell the users how to configure the newly added tile by
-walking them through the sections. Which fields should they fill out? What are the different
-checkboxes? Include relevant screenshots here.**
+Note the resulting image and tag name, you will need it below.
 
-1. Click **Save**.
+### <a id='config'></a> Key Configuration Options
 
-1. Return to the Ops Manager Installation Dashboard and click **Apply changes** to install YOUR-PRODUCT-NAME tile.
+The following lists relevant configuration options for the deploy.  Only the name is strictly required, but users are strongly encouraged to consult [Neo4j’s System Requirements](https://neo4j.com/docs/operations-manual/current/installation/requirements/?ref=pivotal-pks) and to tailor CPU, memory, and disk to the anticipated workload that will be used, in order to ensure best performance.
 
-**If needed, include additional configuration information below. For example, maybe there are
-configuration options not required for installation but which could be useful for certain users. Typical topics include:**
-1. **Self-service**--Do you have recommendations on how to configure/design plans in the tile so that users can choose the best options for themselves?
-1. **High availability**--How do you configure/deploy X Service tile to be highly available?
+* **name**:  the name of your cluster deployment
+* **coreServers**: (default: 3) the number of core servers in your cluster ([refer to Neo4j Causal Cluster architecture](https://neo4j.com/docs/operations-manual/current/clustering/introduction/?ref=pivotal-pks)).  Core Servers' main responsibility is to safeguard data. The Core Servers do so by replicating all transactions using the Raft protocol.  This setting can be set to 1, which
+will result in a single neo4j instance ([dbms.mode=SINGLE](https://neo4j.com/docs/operations-manual/current/reference/configuration-settings/#config_dbms.mode)).  Additional notes: if a single instance is chosen, it cannot be scaled up and down.  A core server count of 2 is not recommended or a sensible HA cluster sizing.
+* **readReplicaServers**: (default: 0) the number of read replicas in your cluster ([refer to Neo4j Causal Cluster architecture](https://neo4j.com/docs/operations-manual/current/clustering/introduction/?ref=pivotal-pks)).  Read Replicas' main responsibility is to scale out graph workloads (Cypher queries, procedures, and so on). Read Replicas act like caches for the data that the Core Servers safeguard, but they are not simple key-value caches. In fact Read Replicas are fully-fledged Neo4j databases capable of fulfilling arbitrary (read-only) graph queries and procedures.  If coreServers is less than or equal to 2, this setting is ignored and 0 replicas will result.
+* **cpuRequest**: CPU units to allocate to each pod.  Refer to [Managing computing resources on Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
+* **memoryRequest**: Memory to allocate to each pod.
+* **cpuLimit**: CPU unit limit per pod
+* **memoryLimit**: Memory limit per pod
+* **volumeSize**:  Disk allocation to core nodes, for example “2Gi”
+
+### <a id='deploy'></a> Deploy
+
+Carefully read the key configurations above, make your selections, and then
+install the helm chart with the following command, making substitutions for
+your choices.
+
+```
+NAMESPACE=default
+APP_NAME=my-neo4j-deploy
+IMAGE=causal-cluster:3.5.7
+
+helm install neo4j --namespace $NAMESPACE --name $APP_NAME \
+    --set namespace=$NAMESPACE \
+    --set image=$IMAGE \
+    --set name=$APP_NAME \
+    --set neo4jPassword=mySecretPassword \
+    --set authEnabled=true \
+    --set coreServers=3 \
+    --set readReplicaServers=1 \
+    --set cpuRequest=200m \
+    --set memoryRequest=1Gi \
+    --set volumeSize=2Gi \
+    --set volumeStorageClass=standard \
+    --set acceptLicenseAgreement=yes
+```
+
+### <a id='cluster'></a> Cluster Formation
+
+Immediately after deploying Neo4j on PKS, as the pods are created the cluster begins to form.  This may take up to 5 minutes, depending on a number of factors including how long it takes pods to get scheduled, and how many resources are associated with the pods.  While the cluster is forming, the Neo4j REST API and Bolt endpoints may not be available.   After a few minutes, bolt endpoints become available inside of the kubernetes cluster.  Please note that by default, Neo4j services are not
+exposed externally.  See the limitations section for more information.
+
+### <a id='hardware'></a> Sizing
+
+In order to ensure that Neo4j is deployable on basic/default PKS clusters, the default values for hardware requests have been made fairly low.
+These default values are suitable for try-out but not for serious production/testing
+workloads.
+
+Sizing databases is ultimately something that should be done with the workload in mind.
+Consult Neo4j's [Performance Tuning Documentation](https://neo4j.com/developer/guide-performance-tuning/?ref=pivotal-pks) for more information.  In general,
+heap size and page cache sizing are the most important places to start when tuning performance.
+
+### <a id='uninstall'></a> Uninstalling
+
+Given a deployed `$APP_NAME` as stated in the install directions above, uninstalling is straightforward:
+
+```
+$ helm delete $APP_NAME
+release "my-neo4j-deploy" deleted
+```
