@@ -1,22 +1,22 @@
 ---
-title: Installing and Configuring YOUR-PRODUCT-NAME
+title: Installing and Configuring Neo4j Enterprise for PCF (PKS)
 owner: Partners
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to install and configure Neo4j on PKS.
+This topic describes how to install and configure Neo4j Enterprise for PCF (PKS).
 
 ##<a id='install'></a> Install and Configure Neo4j on PKS
 
-To install the Neo4j on PKS, do the following:
+To install tNeo4j Enterprise for PCF (PKS), do the following:
 
 1. Download the helm charts and docker container image archives from [Pivotal Network](https://network.pivotal.io/).
 
-1. Extract the downloaded Helm Chart package on your local machine.  This should create a directory
+1. Extract the downloaded Helm chart package on your local machine.  This should create a directory
 called "neo4j"
 
-1. Load the docker image using:
+1. Load the Docker image using:
 
 ```
 docker load < causal-cluster_image.*.tgz
@@ -26,12 +26,15 @@ Note the resulting image and tag name, you will need it below.
 
 ### <a id='config'></a> Key Configuration Options
 
-The following lists relevant configuration options for the deploy.  Only the name is strictly required, but users are strongly encouraged to consult [Neo4j’s System Requirements](https://neo4j.com/docs/operations-manual/current/installation/requirements/?ref=pivotal-pks) and to tailor CPU, memory, and disk to the anticipated workload that will be used, in order to ensure best performance.
+The following lists relevant configuration options for the deployment.  Only the name is strictly required, but users are encouraged to consult [Neo4j’s System Requirements](https://neo4j.com/docs/operations-manual/current/installation/requirements/?ref=pivotal-pks) and to tailor CPU, memory, and disk to the anticipated workload untilized to ensure best performance.
 
 * **name**:  the name of your cluster deployment
-* **coreServers**: (default: 3) the number of core servers in your cluster ([refer to Neo4j Causal Cluster architecture](https://neo4j.com/docs/operations-manual/current/clustering/introduction/?ref=pivotal-pks)).  Core Servers' main responsibility is to safeguard data. The Core Servers do so by replicating all transactions using the Raft protocol.  This setting can be set to 1, which
-will result in a single neo4j instance ([dbms.mode=SINGLE](https://neo4j.com/docs/operations-manual/current/reference/configuration-settings/#config_dbms.mode)).  Additional notes: if a single instance is chosen, it cannot be scaled up and down.  A core server count of 2 is not recommended or a sensible HA cluster sizing.
-* **readReplicaServers**: (default: 0) the number of read replicas in your cluster ([refer to Neo4j Causal Cluster architecture](https://neo4j.com/docs/operations-manual/current/clustering/introduction/?ref=pivotal-pks)).  Read Replicas' main responsibility is to scale out graph workloads (Cypher queries, procedures, and so on). Read Replicas act like caches for the data that the Core Servers safeguard, but they are not simple key-value caches. In fact Read Replicas are fully-fledged Neo4j databases capable of fulfilling arbitrary (read-only) graph queries and procedures.  If coreServers is less than or equal to 2, this setting is ignored and 0 replicas will result.
+* **coreServers**: (default: 3) the number of core servers in your cluster ([refer to Neo4j Causal Cluster architecture](https://neo4j.com/docs/operations-manual/current/clustering/introduction/?ref=pivotal-pks)).
+Core Servers' main responsibility is to safeguard data. The Core Servers do so by replicating all transactions using the Raft protocol.
+This setting can be set to 1, which results in a single neo4j instance ([dbms.mode=SINGLE](https://neo4j.com/docs/operations-manual/current/reference/configuration-settings/#config_dbms.mode)).
+<br> <br>
+    Additional notes: if a single instance is chosen, it cannot be scaled up and down.  A core server count of 2 is not recommended or a sensible HA cluster sizing.
+* **readReplicaServers**: (default: 0) the number of read replicas in your cluster ([refer to Neo4j Causal Cluster architecture](https://neo4j.com/docs/operations-manual/current/clustering/introduction/?ref=pivotal-pks)).  Read Replicas' main responsibility is to scale out graph workloads (Cypher queries, procedures, and so on). Read Replicas act like caches for the data that the Core Servers safeguard, but they are not simple key-value caches. In fact Read Replicas are fully-fledged Neo4j databases capable of fulfilling arbitrary (read-only) graph queries and procedures.  If coreServers is less than or equal to 2, this setting is ignored and 0 replicas result.
 * **cpuRequest**: CPU units to allocate to each pod.  Refer to [Managing computing resources on Kubernetes](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
 * **memoryRequest**: Memory to allocate to each pod.
 * **cpuLimit**: CPU unit limit per pod
@@ -41,7 +44,7 @@ will result in a single neo4j instance ([dbms.mode=SINGLE](https://neo4j.com/doc
 ### <a id='deploy'></a> Deploy
 
 Carefully read the key configurations above, make your selections, and then
-install the helm chart with the following command, making substitutions for
+install the Helm chart with the following command, making substitutions for
 your choices.
 
 ```
@@ -66,8 +69,11 @@ helm install neo4j --namespace $NAMESPACE --name $APP_NAME \
 
 ### <a id='cluster'></a> Cluster Formation
 
-Immediately after deploying Neo4j on PKS, as the pods are created the cluster begins to form.  This may take up to 5 minutes, depending on a number of factors including how long it takes pods to get scheduled, and how many resources are associated with the pods.  While the cluster is forming, the Neo4j REST API and Bolt endpoints may not be available.   After a few minutes, bolt endpoints become available inside of the kubernetes cluster.  Please note that by default, Neo4j services are not
-exposed externally.  See the limitations section for more information.
+After deploying Neo4j Enterprise for PCF (PKS) the cluster forms as the pods are created.
+This can take up to 5 minutes, depending on a number of factors including how long it takes pods to get scheduled, and how many resources are associated with the pods.
+While the cluster is forming, the Neo4j REST API and Bolt endpoints might not be available.
+After a few minutes, bolt endpoints become available inside of the kubernetes cluster.
+Note that by default, Neo4j services are not exposed externally.  See the limitations section for more information.
 
 ### <a id='hardware'></a> Sizing
 
@@ -76,12 +82,13 @@ These default values are suitable for try-out but not for serious production/tes
 workloads.
 
 Sizing databases is ultimately something that should be done with the workload in mind.
-Consult Neo4j's [Performance Tuning Documentation](https://neo4j.com/developer/guide-performance-tuning/?ref=pivotal-pks) for more information.  In general,
-heap size and page cache sizing are the most important places to start when tuning performance.
+In general, heap size and page cache sizing are the most important places to start when tuning performance.
+
+Consult Neo4j's [Performance Tuning Documentation](https://neo4j.com/developer/guide-performance-tuning/?ref=pivotal-pks) for more information.
 
 ### <a id='uninstall'></a> Uninstalling
 
-Given a deployed `$APP_NAME` as stated in the install directions above, uninstalling is straightforward:
+Given a deployed `$APP_NAME` as stated in the installation directions above, uninstalling is straightforward:
 
 ```
 $ helm delete $APP_NAME

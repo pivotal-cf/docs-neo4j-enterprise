@@ -7,33 +7,32 @@ owner: Partners
 
 <p class="note warning">
 <strong>Warning: </strong>
-Neo4j for PKS is currently in beta and is intended for evaluation and test purposes only.
+Neo4j Enterprise for PCF (PKS) is currently in beta and is intended for evaluation and test purposes only.
 Do not use this product in a PKS production environment.
 </p>
 
-This documentation describes Neo4j on PKS, which allows users to deploy multi-node 
-Neo4j Enterprise Causal Clusters to PKS instances, with configuration options 
-for the most common scenarios.  It represents a very rapid way to get started running the 
-world leading native graph database on top of Kubernetes.
+This documentation describes Neo4j Enterprise for PCF (PKS), which allows users to deploy multi-node
+Neo4j Enterprise Causal Clusters to PKS instances, with configuration options
+for the most common scenarios.  It represents a very rapid way to get started running a native graph database on top of Kubernetes.
 
 ## <a id='overview'></a>Overview
 
-Neo4j for PKS is the world's leading native graph database which offers high performance ACID transactions
+Neo4j Enterprise for PCF (PKS) is the world's leading native graph database which offers high performance ACID transactions
 for graph management.  Users can deploy Neo4j to store and query their graphs using the Cypher query language.
 
-Creating a Neo4j for PKS instance creates multiple StatefulSets in your Kubernetes instance backed by 
+Creating a Neo4j Enterprise for PCF (PKS) instance creates multiple StatefulSets in your Kubernetes instance backed by
 persistent volume claims, which store the data.
 
-This guide is intended only as a supplement to the 
-[Neo4j Operations Manual](https://neo4j.com/docs/operations-manual/3.5/?ref=pivotal-pks).   
-Neo4j on PKS is essentially a docker container based deploy of Neo4j Causal Cluster.  
-As such, all of the information in the Operations Manual applies to its operation, 
-and this guide will focus only on kubernetes-specific concerns and 
+This guide is intended only as a supplement to the
+[Neo4j Operations Manual](https://neo4j.com/docs/operations-manual/3.5/?ref=pivotal-pks).
+Neo4j Enterprise for PCF (PKS) is essentially a docker container based deploy of Neo4j Causal Cluster.
+As such, all of the information in the Operations Manual applies to its operation,
+and this guide will focus only on kubernetes-specific concerns and
 PKS-specific concerns.
 
 ## <a id='features'></a>Key Features
 
-Neo4j for PKS includes the following key features:
+Neo4j Enterprise for PCF (PKS) includes the following key features:
 
 * Native graph database supports transactional applications and graph analytics
 * Graph analytics help data scientists gain new perspectives on data
@@ -53,7 +52,7 @@ The following table provides version and version-support information about PRODU
     </tr>
     <tr>
         <td>Release date</td>
-        <td>July 4, 2019</td>
+        <td>July 11, 2019</td>
     </tr>
     <tr>
         <td>Neo4j Enterprise component version</td>
@@ -75,25 +74,26 @@ The following table provides version and version-support information about PRODU
 Before installing Neo4j into your PKS cluster, confirm the following:
 
 - You should have docker and kubectl installed locally from the machine where you want to use neo4j
-- You have authenticated Pivotal's CLI tools (pks) locally to your account.
+- You have authenticated Pivotal's CLI tools (PKS) locally to your account.
 - You have run `pks get-credentials <cluster>` to configure your local kubectl client to interact with your PKS cluster.
 - You should verify that you hold an existing Neo4j Enterprise license, whether purchased, via the startup program, or on an evaluation basis.
 
 ## <a id="limitations"></a>Limitations
 
-At present, bolt+routing drivers which attempt to connect to the cluster from outside of Kubernetes 
-will not function as expected.  Bolt+routing can be used from within the cluster though.  The reason 
-for this has to do with network address translation between the private DNS addresses of the database 
-nodes inside the cluster, and the inability for external clients to resolve those addresses.  For more
-information on this point, see [Neo4j Considerations in Orchestration Environments](https://medium.com/neo4j/neo4j-considerations-in-orchestration-environments-584db747dca5)
+At present, bolt+routing drivers which attempt to connect to the cluster from outside of Kubernetes
+will not function as expected.  Bolt+routing can be used from within the cluster though.  The reason
+for this has to do with network address translation between the private DNS addresses of the database
+nodes inside the cluster, and the inability for external clients to resolve those addresses.
 
-If your use case requires the need to access neo4j with bolt+routing from outside of Kubernetes, we 
-recommend that you assign externally valid DNS to each of your nodes, and then configure the nodes to 
-advertise that external DNS.  In this way, bolt+routing from outside of kubernetes can be made to work, 
+For more information on this point, see [Neo4j Considerations in Orchestration Environments](https://medium.com/neo4j/neo4j-considerations-in-orchestration-environments-584db747dca5)
+
+If your use case requires the need to access Neo4j with bolt+routing from outside of Kubernetes, we
+recommend that you assign externally valid DNS to each of your nodes, and then configure the nodes to
+advertise that external DNS.  In this way, bolt+routing from outside of Kubernetes can be made to work,
 after configuring ingresses to permit network traffic to enter the cluster.
-    
-Exposing each individual pod to a distinct external port is another option, but users who take this 
-“port spreading” approach should be careful to keep in mind the cluster topology; i.e. only the cluster 
+
+Exposing each individual pod to a distinct external port is another option, but users who take this
+“port spreading” approach should be careful to keep in mind the cluster topology; i.e. only the cluster
 leader may accept writes, but any bolt endpoint may be used to spread out read queries.
 
 ## <a id="feedback"></a>Feedback
@@ -103,7 +103,6 @@ If you have a feature request, questions, or information about an issue, please 
 
 ## <a id='license'></a>License
 
-Neo4j on PKS is available to any existing enterprise license holder of Neo4j in a Bring Your Own 
-License (BYOL) arrangement.  Neo4j on PKS is also available under evaluation licenses, contact 
-Neo4j in order to obtain one.   There is no hourly or metered cost associated with using Neo4j on 
-PKS for current license holders.
+Neo4j Enterprise for PCF (PKS) is available to any existing enterprise license holder of Neo4j in a Bring Your Own
+License (BYOL) arrangement.  Neo4j Enterprise for PCF (PKS) is also available under evaluation licenses, contact
+Neo4j in order to obtain one.   There is no hourly or metered cost associated with using Neo4j Enterprise for PCF (PKS) for current license holders.
