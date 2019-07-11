@@ -42,7 +42,7 @@ See the “Security” and “Limitations” sections in this document for a dis
 
 Browser access can be enabled with the following steps.
 
-#### <a id='neo4jbrowser-leader'></a> Determine your Cluster Leader
+#### <a id='neo4jbrowser-leader'></a> Determine Your Cluster Leader
 
 When the cluster forms, one node is chosen as the leader; in Neo4j's
 topology, only the leader can accept writes.  To determine which host is the
@@ -53,7 +53,7 @@ routing table indicating which host (and pod) is the leader.
 If you only want to run read queries, it makes no difference which pod you
 attach to.
 
-#### Forward local ports
+#### Forward Local Ports
 
 First, use [kubectl to forward ports](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) on your cluster's leader pod to your localhost.
 
@@ -68,7 +68,7 @@ In this example, my deployment is named "mygraph", and the "core-0" pod is the l
 
 Open a browser to `http://localhost:7474` connecting you directly to the cluster leader.
 
-**Important**:  when launching Neo4j Browser, you will see a `:server connect` box, which is configured to connect to the host's advertised name, which is an internal DNS name.  Make sure to change this to `localhost`, because the private DNS name is not resolveable from your local machine.
+**Important**:  When launching Neo4j Browser, you will see a `:server connect` box, which is configured to connect to the host's advertised name, which is an internal DNS name.  Make sure to change this to `localhost`, because the private DNS name is not resolveable from your local machine.
 
 Use your username and password as normal.
 
@@ -81,7 +81,7 @@ for user and role management provided as part of neo4j.
 
 ### <a id='advanced'></a> Advanced/Custom Configuration of Neo4j
 
-The deploy for PKS is based on Neo4j’s public docker containers.  This means
+The deploy for PKS is based on Neo4j’s public Docker containers.  This means
 that [Neo4j documentation for Docker](https://neo4j.com/docs/operations-manual/current/installation/docker/?ref=pivotal-pks) applies to the configuration of these pods.   In general, to specify an advanced configuration, users should edit the core-statefulset template, and the readreplias-statefulset template to specify environment variables passed to the Docker containers following the guidance of the Docker documentation listed above.
 
 For example, to enable query logging in Neo4j, a user needs to set
@@ -91,7 +91,7 @@ adds the following environment variable
 environment variables are passed through to the docker container, which
 configures neo4j appropriately.
 
-### <a id='password'></a> Getting your Password
+### <a id='password'></a> Getting Your Password
 
 After installation, whether a password was specified or generated, the
 password is stored in a kubernetes secret that is attached to your
@@ -109,7 +109,7 @@ This password applies for the base administrative user named “neo4j”.
 ### <a id='hostnames'></a> Hostnames
 
 All Neo4j cluster nodes inside of PKS get private DNS names that you can use to access them.
-Host names are generated as follows.   `$NAMESPACE` refers to the kubernetes namespace used to deploy neo4j, and `$APP_INSTANCE_NAME` refers to the name it was deployed under.
+Host names are generated as follows.   `$NAMESPACE` refers to the Kubernetes namespace used to deploy neo4j, and `$APP_INSTANCE_NAME` refers to the name it was deployed under.
 The variable `$N` refers to the individual cluster node.  For clusters with 3 core nodes, $N could be 0, 1, or 2, and a total of three hostnames are valid.
 
 - Core Host:  `$APP_INSTANCE_NAME-neo4j-core-$N.$APP_INSTANCE_NAME-neo4j.$NAMESPACE.svc.cluster.local`
@@ -123,8 +123,8 @@ By default, each node exposes:
 - HTTPS on port 7473
 - Bolt on port 7687
 
-Exposed services and port mappings can be configured by referencing Neo4j’s docker documentation.
-See the advanced configuration section in this document for how to change the way the docker containers in each pod are configured.
+Exposed services and port mappings can be configured by referencing Neo4j’s Docker documentation.
+See the advanced configuration section in this document for how to change the way the Docker containers in each pod are configured.
 
 ### <a id='addrs'></a> Service Address
 
@@ -135,7 +135,7 @@ Additionally, a service address inside of the cluster is available as follows - 
 Any client can connect to this address, as it is a DNS record with multiple entries pointing to the nodes which back the cluster.
 For example, bolt+routing clients can use this address to bootstrap their connection into the cluster, subject to the items in the limitations section.
 
-## <a id='BACKUP'></a>  Backing up your Database
+## <a id='BACKUP'></a>  Backing up Your Database
 
 Consult [How to Backup Neo4j Running in Kubernetes](https://medium.com/neo4j/how-to-backup-neo4j-running-in-kubernetes-3697761f229av)
 
@@ -149,7 +149,7 @@ This section describes how to scale Neo4j Enterprise for PCF (PKS) up and down a
 
 ### <a id='scaling-planning'></a> Planning
 
-Before scaling a database running on kubernetes, consult in depth the Neo4j documentation on clustering architecture, and in particular take care to choose carefully between whether you want to add core nodes or read replicas.
+Before scaling a database running on Kubernetes, consult in depth the Neo4j documentation on clustering architecture, and in particular take care to choose carefully between whether you want to add core nodes or read replicas.
 Additionally, this planning process should take care to include details of the Kubernetes layer and where the node pools reside.
 Adding extra core nodes to protect data with additional redundancy does not provide extra guarantees if all Kubernetes nodes are in the same zone, for example.
 

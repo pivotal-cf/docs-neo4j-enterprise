@@ -1,5 +1,5 @@
 ---
-title: Neo4j for PKS (Beta)
+title: Neo4j Enterprise for PCF (PKS) (Beta)
 owner: Partners
 ---
 
@@ -17,7 +17,7 @@ for the most common scenarios.  It represents a very rapid way to get started ru
 
 ## <a id='overview'></a>Overview
 
-Neo4j Enterprise for PCF (PKS) is the world's leading native graph database which offers high performance ACID transactions
+Neo4j is the world's leading native graph database which offers high performance ACID transactions
 for graph management.  Users can deploy Neo4j to store and query their graphs using the Cypher query language.
 
 Creating a Neo4j Enterprise for PCF (PKS) instance creates multiple StatefulSets in your Kubernetes instance backed by
@@ -73,10 +73,10 @@ The following table provides version and version-support information about PRODU
 
 Before installing Neo4j into your PKS cluster, confirm the following:
 
-- You should have docker and kubectl installed locally from the machine where you want to use neo4j
+- You should have Docker and kubectl installed locally from the machine where you want to use neo4j
 - You have authenticated Pivotal's CLI tools (PKS) locally to your account.
 - You have run `pks get-credentials <cluster>` to configure your local kubectl client to interact with your PKS cluster.
-- You should verify that you hold an existing Neo4j Enterprise license, whether purchased, via the startup program, or on an evaluation basis.
+- You should verify that you hold an existing Neo4j Enterprise license, whether purchased via the startup program, or on an evaluation basis.
 
 ## <a id="limitations"></a>Limitations
 
@@ -85,7 +85,7 @@ will not function as expected.  Bolt+routing can be used from within the cluster
 for this has to do with network address translation between the private DNS addresses of the database
 nodes inside the cluster, and the inability for external clients to resolve those addresses.
 
-For more information on this point, see [Neo4j Considerations in Orchestration Environments](https://medium.com/neo4j/neo4j-considerations-in-orchestration-environments-584db747dca5)
+For more information on this point, see [Neo4j Considerations in Orchestration Environments](https://medium.com/neo4j/neo4j-considerations-in-orchestration-environments-584db747dca5).
 
 If your use case requires the need to access Neo4j with bolt+routing from outside of Kubernetes, we
 recommend that you assign externally valid DNS to each of your nodes, and then configure the nodes to
@@ -98,8 +98,7 @@ leader may accept writes, but any bolt endpoint may be used to spread out read q
 
 ## <a id="feedback"></a>Feedback
 
-If you have a feature request, questions, or information about an issue, please email
-[Pivotal Cloud Foundry Feedback](mailto:cf-feedback@pivotal.io) or send an email to support@neo4j.com.
+If you have a feature request, questions, or information about an issue, please email send an email to [support@neo4j.com](mailto:support@neo4j.com).
 
 ## <a id='license'></a>License
 
