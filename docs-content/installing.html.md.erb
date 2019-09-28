@@ -1,15 +1,15 @@
 ---
-title: Installing and Configuring Neo4j Enterprise for PCF (PKS)
+title: Installing and Configuring Neo4j Enterprise for Pivotal Platform (PKS)
 owner: Partners
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to install and configure Neo4j Enterprise for PCF (PKS).
+This topic describes how to install and configure Neo4j Enterprise for Pivotal Platform (PKS).
 
 ##<a id='install'></a> Install and Configure Neo4j on PKS
 
-To install Neo4j Enterprise for PCF on PKS, do the following:
+To install Neo4j Enterprise for Pivotal Platform on PKS, do the following:
 
 1. Download the Helm charts and Docker container image archives from [Pivotal Network](https://network.pivotal.io/products/neo4j-enterprise/).
 
@@ -69,7 +69,7 @@ helm install neo4j --namespace $NAMESPACE --name $APP_NAME \
 
 ### <a id='cluster'></a> Cluster Formation
 
-After deploying Neo4j Enterprise for PCF (PKS) the cluster forms as the pods are created.
+After deploying Neo4j Enterprise for Pivotal Platform (PKS) the cluster forms as the pods are created.
 This can take up to 5 minutes, depending on a number of factors including how long it takes pods to get scheduled, and how many resources are associated with the pods.
 While the cluster is forming, the Neo4j REST API and Bolt endpoints might not be available.
 After a few minutes, bolt endpoints become available inside of the kubernetes cluster.
