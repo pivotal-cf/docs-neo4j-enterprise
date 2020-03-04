@@ -1,15 +1,15 @@
 ---
-title: Using Neo4j Enterprise for Pivotal Platform (PKS)
+title: Using Neo4j Enterprise for VMware Tanzu
 owner: Partners
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to use Neo4j Enterprise for Pivotal Platform (PKS).
+This topic describes how to use Neo4j Enterprise for VMware Tanzu.
 
-##<a id='using'></a> Using Neo4j Enterprise for Pivotal Platform (PKS)
+##<a id='using'></a> Using Neo4j Enterprise for VMware Tanzu
 
-This section describes how to use Neo4j Enterprise for Pivotal Platform (PKS).  The material covered here is only
+This section describes how to use Neo4j Enterprise for VMware Tanzu.  The material covered here is only
 intended to cover the PKS specific details, as a supplement to Neo4j's
 [main user documentation](https://neo4j.com/docs/) which should be relied upon for
 additional questions and further guidance.
@@ -22,13 +22,13 @@ To connect to your cluster, you can issue the following command; modify APP_INST
 
 ```
 APP_INSTANCE_NAME=my-graph
-# Set password as described above in NEO4J_PASSWORD
+# Set password as described above in NEO4J_TAS for VMsSWORD
 kubectl run -it --rm cypher-shell \
   --image=causal-cluster:3.5.7 \
   --restart=Never \
   --namespace=default \
   --command -- ./bin/cypher-shell -u neo4j \
-  -p "$NEO4J_PASSWORD" \
+  -p "$NEO4J_TAS for VMsSWORD" \
   -a $APP_INSTANCE_NAME-neo4j.default.svc.cluster.local
 ```
 
@@ -145,7 +145,7 @@ Consult [How to Restore Neo4j Running in Kubernetes](https://medium.com/google-c
 
 ## <a id='SCALING'></a> Scaling
 
-This section describes how to scale Neo4j Enterprise for Pivotal Platform (PKS) up and down according to needs.
+This section describes how to scale Neo4j Enterprise for VMware Tanzu up and down according to needs.
 
 ### <a id='scaling-planning'></a> Planning
 
@@ -194,7 +194,7 @@ For Neo4j, this means that items like configured storage size, hardware limits, 
 If scaling down, do not scale below three core nodes; this is the minimum necessary to guarantee a properly functioning cluster with data redundancy.
 Consult the Neo4j clustering documentation for more information.
 
-Neo4j Enterprise for Pivotal Platform (PKS) is configured to never delete the backing data drive, to lessen the chance of inadvertent data destruction.
+Neo4j Enterprise for VMware Tanzu is configured to never delete the backing data drive, to lessen the chance of inadvertent data destruction.
 If you scale up and then later scale down, this can orphan a disk, which you may want to manually delete at a later date.
 
 ## <a id='security'></a> Security
