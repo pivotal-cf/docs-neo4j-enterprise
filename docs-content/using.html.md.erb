@@ -22,13 +22,13 @@ To connect to your cluster, you can issue the following command; modify APP_INST
 
 ```
 APP_INSTANCE_NAME=my-graph
-# Set password as described above in NEO4J_TAS for VMsSWORD
+# Set password as described above in NEO4J_PASSWORD
 kubectl run -it --rm cypher-shell \
   --image=causal-cluster:3.5.7 \
   --restart=Never \
   --namespace=default \
   --command -- ./bin/cypher-shell -u neo4j \
-  -p "$NEO4J_TAS for VMsSWORD" \
+  -p "$NEO4J_PASSWORD" \
   -a $APP_INSTANCE_NAME-neo4j.default.svc.cluster.local
 ```
 
